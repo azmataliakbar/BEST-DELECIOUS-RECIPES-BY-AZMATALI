@@ -23,28 +23,41 @@ export default function RecipePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  // Fetch recipe directly in useEffect - no separate loadRecipe function
   useEffect(() => {
-    if (params.id) {
-      loadRecipe();
-    }
-  }, [params.id]);
-
-  const loadRecipe = async () => {
-    setLoading(true);
-    setError(false);
-    try {
-      const data = await getRecipeById(params.id as string);
-      if (data) {
-        setRecipe(data);
-      } else {
-        setError(true);
+    let isMounted = true;
+    
+    const fetchRecipe = async () => {
+      if (!params.id) return;
+      
+      setLoading(true);
+      setError(false);
+      try {
+        const data = await getRecipeById(params.id as string);
+        if (isMounted) {
+          if (data) {
+            setRecipe(data);
+          } else {
+            setError(true);
+          }
+        }
+      } catch {
+        if (isMounted) {
+          setError(true);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
       }
-    } catch (err) {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    
+    fetchRecipe();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [params.id]);
 
   const getIngredients = () => {
     if (!recipe) return [];

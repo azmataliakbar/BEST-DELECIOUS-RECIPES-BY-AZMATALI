@@ -1,7 +1,9 @@
+import { Recipe } from '@/types';
+
 const BASE_URL = 'https://www.themealdb.com/api/json/v1/1';
 
 // Fallback recipes in case API fails
-function getFallbackRecipes() {
+function getFallbackRecipes(): Recipe[] {
   return [
     {
       idMeal: "fb1",
@@ -62,11 +64,11 @@ function getFallbackRecipes() {
   ];
 }
 
-export async function getPakistaniRecipes() {
+export async function getPakistaniRecipes(): Promise<Recipe[]> {
   try {
     // Get recipes from all main categories
-    const categories = ['Chicken', 'Beef', 'Dessert', 'Lamb', 'Seafood', 'Vegetarian', 'Pasta', 'Breakfast', 'Goat', 'Pork'];
-    let allRecipes: any[] = [];
+    const categories: string[] = ['Chicken', 'Beef', 'Dessert', 'Lamb', 'Seafood', 'Vegetarian', 'Pasta', 'Breakfast', 'Goat', 'Pork'];
+    let allRecipes: Recipe[] = [];
     
     for (const category of categories) {
       try {
@@ -81,9 +83,8 @@ export async function getPakistaniRecipes() {
     }
     
     // Remove duplicates by idMeal
-    const uniqueRecipes = Array.from(new Map(allRecipes.map(r => [r.idMeal, r])).values());
+    const uniqueRecipes: Recipe[] = Array.from(new Map(allRecipes.map(r => [r.idMeal, r])).values());
     
-    // Return ALL recipes - NO LIMIT
     return uniqueRecipes;
   } catch (error) {
     console.error('Error fetching recipes:', error);
@@ -91,7 +92,7 @@ export async function getPakistaniRecipes() {
   }
 }
 
-export async function getRecipesByCategory(category: string) {
+export async function getRecipesByCategory(category: string): Promise<Recipe[]> {
   try {
     const response = await fetch(`${BASE_URL}/filter.php?c=${category}`);
     
@@ -100,42 +101,20 @@ export async function getRecipesByCategory(category: string) {
     }
     
     const data = await response.json();
-    const meals = data.meals || [];
+    const meals: Recipe[] = data.meals || [];
     
-    // Return ALL recipes for this category - NO LIMIT
     return meals;
   } catch (error) {
     console.error(`Error fetching ${category} recipes:`, error);
-    // Return fallbacks for Beef and Dessert if API fails
     if (category === 'Beef' || category === 'Dessert' || category === 'Chicken') {
-      const fallbacks = getFallbackRecipes();
+      const fallbacks: Recipe[] = getFallbackRecipes();
       return fallbacks.filter(r => r.strCategory === category);
     }
     return [];
   }
 }
 
-export async function searchRecipes(query: string) {
-  if (!query || query.trim() === '') {
-    return [];
-  }
-  
-  try {
-    const response = await fetch(`${BASE_URL}/search.php?s=${query}`);
-    
-    if (!response.ok) {
-      throw new Error(`Search failed with status ${response.status}`);
-    }
-    
-    const data = await response.json();
-    return data.meals || [];
-  } catch (error) {
-    console.error('Search error:', error);
-    return [];
-  }
-}
-
-export async function getRecipeById(id: string) {
+export async function getRecipeById(id: string): Promise<Recipe | null> {
   try {
     const response = await fetch(`${BASE_URL}/lookup.php?i=${id}`);
     
@@ -151,7 +130,7 @@ export async function getRecipeById(id: string) {
   }
 }
 
-export async function getAllCategories() {
+export async function getAllCategories(): Promise<{ strCategory: string }[]> {
   try {
     const response = await fetch(`${BASE_URL}/list.php?c=list`);
     const data = await response.json();

@@ -7,7 +7,7 @@ export interface Recipe {
   strInstructions?: string;
   strYoutube?: string;
   strSource?: string;
-  [key: string]: string | undefined;
+  [key: string]: string | undefined;  // This allows additional properties
 }
 
 export interface RecipeDetails extends Recipe {

@@ -5,10 +5,9 @@ import { Recipe } from '@/types';
 
 interface RecipeCardProps {
   recipe: Recipe;
-  index: number;
 }
 
-export default function RecipeCard({ recipe, index }: RecipeCardProps) {
+export default function RecipeCard({ recipe }: RecipeCardProps) {
   // Determine dish type based on category
   const getDishType = () => {
     const category = recipe.strCategory?.toLowerCase() || '';

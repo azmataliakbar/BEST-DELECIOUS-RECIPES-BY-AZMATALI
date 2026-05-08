@@ -21,12 +21,20 @@ export default function Home() {
       setLoading(false);
     }
     loadRecipes();
+  }, []);
 
+  // Fix: Use a separate useEffect with a timeout to avoid setState warning
+  useEffect(() => {
     const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (isDark) {
-      setDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
+    // Use a timeout to move setState out of the effect body
+    const timer = setTimeout(() => {
+      if (isDark) {
+        setDarkMode(true);
+        document.documentElement.classList.add('dark');
+      }
+    }, 0);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const filterByCategory = async (category: string) => {
@@ -137,8 +145,8 @@ export default function Home() {
           </div>
         ) : filteredRecipes.length > 0 ? (
           <div className="grid grid-cols-1 xs:grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredRecipes.map((recipe, index) => (
-              <RecipeCard key={recipe.idMeal} recipe={recipe} index={index} />
+            {filteredRecipes.map((recipe) => (
+              <RecipeCard key={recipe.idMeal} recipe={recipe} />
             ))}
           </div>
         ) : (
