@@ -1,9 +1,9 @@
-import type { Metadata } from 'next'
 import './globals.css'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Pakistani Zaika - Authentic Pakistani Recipes',
-  description: 'Discover and cook authentic Pakistani recipes from biryani to karahi',
+  title: 'BEST Delicious Recipe',
+  description: 'Explore authentic delicious mouth-watering recipes',
 }
 
 export default function RootLayout({
